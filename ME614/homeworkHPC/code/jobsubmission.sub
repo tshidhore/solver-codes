@@ -1,0 +1,44 @@
+#!/bin/bash -l
+
+#PBS -q scholar
+#PBS -N ME_614_tshidhor
+#PBS -l walltime=24:00:00
+#PBS -l nodes=2:ppn=9
+#PBS -m b
+#PBS -m e
+#PBS -k oe 
+#PBS -n
+
+echo The working directory is $PBS_O_WORKDIR
+echo The nodes allocated are-
+cat $PBS_NODEFILE
+echo changing to $PBS_O_WORKDIR
+cd $PBS_O_WORKDIR
+
+echo Loading python
+module load python
+
+echo running parts a and b
+for i in 1 2 4 8 16
+do
+	echo Running with NP=$i...
+	mpirun -np $i python p1.py
+	mpirun -np $i python p2.py
+done
+
+echo Running part c
+
+
+for k in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+do 
+	mpirun -np $k python p3.py
+done
+echo Computations done... moving to the plotter code
+
+#Need to ensure that report does not exist before this command
+mkdir ../report
+ 
+python plot.py
+
+echo Program ends
+exit
